@@ -1,0 +1,166 @@
+/* Root class definition for all input types */
+.halu-input {
+    /* Common styles for all input types */
+    padding: 10px;
+    margin: 5px;
+    font-family: Arial, sans-serif;
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Button input */
+.halu-input-button[type="button"],
+.halu-input-button[type="submit"],
+.halu-input-button[type="reset"] {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.halu-input-button[type="button"]:hover,
+.halu-input-button[type="submit"]:hover,
+.halu-input-button[type="reset"]:hover {
+    background-color: #45a049;
+}
+
+/* Checkbox input */
+.halu-input-checkbox[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #4CAF50;
+}
+
+/* Color input */
+.halu-input-color[type="color"] {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid #ccc;
+}
+
+/* Date input */
+.halu-input-date[type="date"] {
+    width: 200px;
+    padding: 5px;
+}
+
+/* DateTime-local input */
+.halu-input-datetime-local[type="datetime-local"] {
+    width: 250px;
+    padding: 5px;
+}
+
+/* Email input */
+.halu-input-email[type="email"] {
+    width: 300px;
+    padding: 5px;
+}
+
+/* File input */
+.halu-input-file[type="file"] {
+    padding: 5px;
+}
+
+/* Hidden input */
+.halu-input-hidden[type="hidden"] {
+    display: none;
+}
+
+/* Image input */
+.halu-input-image[type="image"] {
+    width: 100px;
+    height: 100px;
+    border: none;
+}
+
+/* Month input */
+.halu-input-month[type="month"] {
+    width: 150px;
+    padding: 5px;
+}
+
+/* Number input */
+.halu-input-number[type="number"] {
+    width: 100px;
+    padding: 5px;
+}
+
+/* Password input */
+.halu-input-password[type="password"] {
+    width: 300px;
+    padding: 5px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Radio input */
+.halu-input-radio[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #4CAF50;
+}
+
+/* Range input */
+.halu-input-range[type="range"] {
+    width: 200px;
+    height: 10px;
+}
+
+/* Reset input */
+.halu-input-reset[type="reset"] {
+    background-color: #f44336;
+    color: white;
+    cursor: pointer;
+}
+
+.halu-input-reset[type="reset"]:hover {
+    background-color: #e53935;
+}
+
+/* Search input */
+.halu-input-search[type="search"] {
+    width: 300px;
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Submit input */
+.halu-input-submit[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.halu-input-submit[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Tel input */
+.halu-input-tel[type="tel"] {
+    width: 300px;
+    padding: 5px;
+}
+
+/* Text input (default) */
+.halu-input-text[type="text"] {
+    width: 300px;
+    padding: 5px;
+}
+
+/* Time input */
+.halu-input-time[type="time"] {
+    width: 150px;
+    padding: 5px;
+}
+
+/* URL input */
+.halu-input-url[type="url"] {
+    width: 300px;
+    padding: 5px;
+}
+
+/* Week input */
+.halu-input-week[type="week"] {
+    width: 150px;
+    padding: 5px;
+}
