@@ -1,6 +1,7 @@
 /* Root class definition for all input types */
 .halu-input {
     /* Common styles for all input types */
+    font-size: 2%;
     padding: 2%;
     margin: 1%;
     font-family: Arial, sans-serif;
