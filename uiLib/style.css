@@ -16,12 +16,16 @@
     background-color: #4CAF50;
     color: white;
     cursor: pointer;
+    width: 12%;
+    height: 12%;
 }
 
 .halu-input-button[type="button"]:hover,
 .halu-input-button[type="submit"]:hover,
 .halu-input-button[type="reset"]:hover {
     background-color: #45a049;
+    width: 12%;
+    height: 12%;
 }
 
 /* Checkbox input */
