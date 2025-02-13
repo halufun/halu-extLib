@@ -1,5 +1,5 @@
 /* Root class definition for all input types */
-.halu-input {
+input {
     /* Common styles for all input types */
     padding: 2%;
     margin: 1%;
