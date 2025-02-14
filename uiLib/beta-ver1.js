@@ -43,11 +43,7 @@
                             }
                         }
                     },
-                    {
-                        opcode: 'showUI',
-                        blockType: Scratch.BlockType.COMMAND,
-                        text: 'Show Custom UI'
-                    },
+                    
                     {
                         opcode: 'eraseContainer',
                         blockType: Scratch.BlockType.COMMAND,
