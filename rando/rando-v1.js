@@ -1,6 +1,6 @@
 (function(Scratch) {
   'use strict';
-  class HexBetweenExtension {
+  class HaluRando {
     getInfo() {
       return {
         id: 'haluRando',
@@ -63,5 +63,5 @@
       }
     }
   }
-  Scratch.extensions.register(new HexBetweenExtension());
+  Scratch.extensions.register(new HaluRando());
 })(Scratch);
