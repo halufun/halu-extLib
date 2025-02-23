@@ -9,8 +9,8 @@ class ObjectFamilyExtension {
 
   getInfo() {
     return {
-      id: 'objectFamily',
-      name: 'Object Family',
+      id: 'haluObjection',
+      name: 'Objection',
       blocks: [
         {
           opcode: 'newObjectWithId',
