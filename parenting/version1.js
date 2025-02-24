@@ -1,10 +1,11 @@
 class ObjectFamilyExtension {
-  constructor() {
+  constructor(runtime) {
     // Registry of objects keyed by composite key "family:id"
     // Each value is { target, id, family, offset }
     this.objects = {};
     // Registry of families: { familyName: { parent: compositeKey, children: [compositeKey, ...] } }
     this.families = {};
+    this.runtime = Scratch.vm.runtime;
   }
 
   getInfo() {
@@ -205,7 +206,7 @@ class ObjectFamilyExtension {
     const target = this.objects[key].target;
     if (!target) return;
     target.setXY(absX, absY);
-    target.direction = Scratch.Cast.toNumber(absDeg);
+    target.setDirection(absDeg);
     this.objects[key].offset = { x: absX, y: absY, deg: absDeg };
   }
 
