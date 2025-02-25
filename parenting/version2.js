@@ -10,7 +10,7 @@
       this.x = 0;
       this.y = 0;
       this.rotation = 0; // in degrees
-      this.scale = 1;    // multiplier (1 = 100%)
+      this.length = 1;   // multiplier (1 = 100%); now interpreted as the length/distance between this node and its parent only.
       // Parent node id (if any)
       this.parent = null;
     }
@@ -20,7 +20,7 @@
       let tx = this.x;
       let ty = this.y;
       let trot = this.rotation;
-      let tscale = this.scale;
+      let tlength = this.length;
       // If this node has a parent, get the parent’s effective transform and compose
       if (this.parent && extension.nodes[this.parent]) {
         const parentNode = extension.nodes[this.parent];
@@ -29,18 +29,18 @@
         const rad = (parentTrans.trot - 90) * Math.PI / 180;
         const cos = Math.cos(rad);
         const sin = Math.sin(rad);
-        // First scale the local position by the parent's scale
-        const newX = tx * parentTrans.tscale;
-        const newY = ty * parentTrans.tscale;
+        // First, scale the local position by the parent's effective length
+        const newX = tx * parentTrans.tlength;
+        const newY = ty * parentTrans.tlength;
         // Rotate the local position by the parent's rotation and add parent's position
         tx = parentTrans.tx + (newX * cos - newY * -sin);
         ty = parentTrans.ty + (newX * -sin + newY * cos);
-        // The effective rotation is the sum
+        // The effective rotation is the sum of the parent's rotation and the local rotation
         trot = parentTrans.trot + trot;
-        // And scale multiplies
-        tscale = parentTrans.tscale * tscale;
+        // Instead of compounding the scales, use the node's own length
+        tlength = this.length;
       }
-      return { tx, ty, trot, tscale };
+      return { tx, ty, trot, tlength };
     }
   }
 
@@ -87,14 +87,14 @@
       this.updateTransforms(this.nodes[id]);
     }
 
-    // Block: node id [ID] set scale to [SCALE]
-    setScale(args, util) {
+    // Block: node id [ID] set length to [length]
+    setlength(args, util) {
       const id = args.ID.toString();
-      const scale = Number(args.SCALE);
+      const length = Number(args.length);
       if (!this.nodes[id]) {
         this.nodes[id] = new Node(util.target, id);
       }
-      this.nodes[id].scale = scale;
+      this.nodes[id].length = length;
       this.updateTransforms(this.nodes[id]);
     }
 
@@ -137,12 +137,31 @@
       return effective.trot;
     }
 
-    // Getter: node id [ID] effective scale
-    getEffectiveScale(args, util) {
+    // Getter: node id [ID] effective length
+    getEffectivelength(args, util) {
       const id = args.ID.toString();
       if (!this.nodes[id]) return 1;
       const effective = this.nodes[id].getEffectiveTransform(this);
-      return effective.tscale;
+      return effective.tlength;
+    }
+
+    // New FUNCTION: Return the parent id of a given node.
+    getParent(args, util) {
+      const id = args.ID.toString();
+      if (!this.nodes[id]) return "";
+      return this.nodes[id].parent || "";
+    }
+
+    // New FUNCTION: Return an array of node IDs that have the given node as their parent.
+    getChildren(args, util) {
+      const id = args.ID.toString();
+      const children = [];
+      for (const nodeId in this.nodes) {
+        if (this.nodes[nodeId].parent === id) {
+          children.push(nodeId);
+        }
+      }
+      return children;
     }
 
     // When a node’s local transform changes, update its target’s properties and recursively update its children.
@@ -162,6 +181,11 @@
       }
     }
 
+    // Existing function to break all relationships by clearing all nodes.
+    clearAllNodes(args, util) {
+      this.nodes = {};
+    }
+
     // Define the extension’s blocks and menus.
     getInfo() {
       return {
@@ -172,6 +196,30 @@
             opcode: 'assignNode',
             blockType: Scratch.BlockType.COMMAND,
             text: 'assign node id [ID]',
+            arguments: {
+              ID: {
+                type: Scratch.ArgumentType.STRING,
+                defaultValue: 'node1'
+              }
+            }
+          },
+          // New block: return the parent of a node
+          {
+            opcode: 'getParent',
+            blockType: Scratch.BlockType.REPORTER,
+            text: 'node id [ID] parent',
+            arguments: {
+              ID: {
+                type: Scratch.ArgumentType.STRING,
+                defaultValue: 'node1'
+              }
+            }
+          },
+          // New block: return an array of a node's children
+          {
+            opcode: 'getChildren',
+            blockType: Scratch.BlockType.REPORTER,
+            text: 'node id [ID] children',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -214,15 +262,15 @@
             }
           },
           {
-            opcode: 'setScale',
+            opcode: 'setlength',
             blockType: Scratch.BlockType.COMMAND,
-            text: 'node id [ID] set scale to [SCALE]',
+            text: 'node id [ID] set length to [length]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
                 defaultValue: 'node1'
               },
-              SCALE: {
+              length: {
                 type: Scratch.ArgumentType.NUMBER,
                 defaultValue: 1
               }
@@ -277,15 +325,21 @@
             }
           },
           {
-            opcode: 'getEffectiveScale',
+            opcode: 'getEffectivelength',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] effective scale',
+            text: 'node id [ID] effective length',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
                 defaultValue: 'node1'
               }
             }
+          },
+          // New block to clear all nodes and break all relationships
+          {
+            opcode: 'clearAllNodes',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'clear all nodes and break all relationships'
           }
         ]
       };
