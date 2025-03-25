@@ -1,7 +1,6 @@
 (function (Scratch) {
   'use strict';
 
-  // A simple Node class to store local transform data and (optionally) a target.
   class Node {
     constructor(target, id) {
       this.target = target; // the sprite/clone (a Scratch target)
@@ -13,29 +12,9 @@
       // Parent node id (if any)
       this.parent = null;
     }
-    // Recursively calculate the effective transform (parent transforms applied first)
-    getEffectiveTransform(extension) {
-      // Start with local values:
-      let tx = this.x;
-      let ty = this.y;
-      let trot = this.rotation;
-      // If this node has a parent, get the parent’s effective transform and compose
-      if (this.parent && extension.nodes[this.parent]) {
-        const parentNode = extension.nodes[this.parent];
-        const parentTrans = parentNode.getEffectiveTransform(extension);
-        // Convert parent rotation to radians
-        const rad = (parentTrans.trot - 90) * Math.PI / 180;
-        const cos = Math.cos(rad);
-        const sin = Math.sin(rad);
-        // Rotate the local position by the parent's rotation and add parent's position
-        const newX = tx;
-        const newY = ty;
-        tx = parentTrans.tx + (newX * cos - newY * -sin);
-        ty = parentTrans.ty + (newX * -sin + newY * cos);
-        // The effective rotation is the sum of the parent's rotation and the local rotation
-        trot = parentTrans.trot + trot;
-      }
-      return { tx, ty, trot };
+    // Now, return the stored (relative) transform values without applying parent's transform.
+    getRelativeTransform() {
+      return { tx: this.x, ty: this.y, trot: this.rotation };
     }
   }
 
@@ -46,7 +25,6 @@
       this.nodes = {};
     }
 
-    // Block: assign node id [ID]
     assignNode(args, util) {
       const id = args.ID.toString();
       const target = util.target;
@@ -58,7 +36,6 @@
       }
     }
 
-    // Block: node id [ID] set position to x: [X] y: [Y]
     setPosition(args, util) {
       const id = args.ID.toString();
       const x = Number(args.X);
@@ -71,7 +48,6 @@
       this.updateTransforms(this.nodes[id]);
     }
 
-    // Block: node id [ID] set rotation to [ROT]
     setRotation(args, util) {
       const id = args.ID.toString();
       const rotation = Number(args.ROT);
@@ -82,7 +58,6 @@
       this.updateTransforms(this.nodes[id]);
     }
 
-    // Block: node id [ID] set parent to [PARENT_ID]
     setParent(args, util) {
       const childId = args.ID.toString();
       const parentId = args.PARENT_ID.toString();
@@ -97,38 +72,41 @@
       this.updateTransforms(this.nodes[childId]);
     }
 
-    // Getter: node id [ID] effective x
-    getEffectiveX(args, util) {
+    clearParent(args, util) {
       const id = args.ID.toString();
-      if (!this.nodes[id]) return 0;
-      const effective = this.nodes[id].getEffectiveTransform(this);
-      return effective.tx;
+      if (this.nodes[id]) {
+        this.nodes[id].parent = null;
+        this.updateTransforms(this.nodes[id]);
+      }
     }
 
-    // Getter: node id [ID] effective y
-    getEffectiveY(args, util) {
+    getRelativeX(args, util) {
       const id = args.ID.toString();
       if (!this.nodes[id]) return 0;
-      const effective = this.nodes[id].getEffectiveTransform(this);
-      return effective.ty;
+      const relative = this.nodes[id].getRelativeTransform();
+      return relative.tx;
     }
 
-    // Getter: node id [ID] effective rotation
-    getEffectiveRotation(args, util) {
+    getRelativeY(args, util) {
       const id = args.ID.toString();
       if (!this.nodes[id]) return 0;
-      const effective = this.nodes[id].getEffectiveTransform(this);
-      return effective.trot;
+      const relative = this.nodes[id].getRelativeTransform();
+      return relative.ty;
     }
 
-    // New FUNCTION: Return the parent id of a given node.
+    getRelativeRotation(args, util) {
+      const id = args.ID.toString();
+      if (!this.nodes[id]) return 0;
+      const relative = this.nodes[id].getRelativeTransform();
+      return relative.trot;
+    }
+
     getParent(args, util) {
       const id = args.ID.toString();
       if (!this.nodes[id]) return "";
       return this.nodes[id].parent || "";
     }
 
-    // New FUNCTION: Return an array of node IDs that have the given node as their parent.
     getChildren(args, util) {
       const id = args.ID.toString();
       const children = [];
@@ -139,30 +117,23 @@
       }
       return children;
     }
-
-    // When a node’s local transform changes, update its target’s properties and recursively update its children.
     updateTransforms(node) {
-      const effective = node.getEffectiveTransform(this);
+      const relative = node.getRelativeTransform();
       if (node.target) {
         // In Scratch, x and y are the sprite’s coordinates,
         // 'direction' is its rotation.
-        node.target.setXY(effective.tx, effective.ty);
-        node.target.setDirection(effective.trot);
+        node.target.setXY(relative.tx, relative.ty);
+        node.target.setDirection(relative.trot);
       }
-      // Recursively update any children nodes
       for (const id in this.nodes) {
         if (this.nodes[id].parent === node.id) {
           this.updateTransforms(this.nodes[id]);
         }
       }
     }
-
-    // Existing function to break all relationships by clearing all nodes.
     clearAllNodes(args, util) {
       this.nodes = {};
     }
-
-    // Define the extension’s blocks and menus.
     getInfo() {
       return {
         id: 'transform',
@@ -179,7 +150,6 @@
               }
             }
           },
-          // New block: return the parent of a node
           {
             opcode: 'getParent',
             blockType: Scratch.BlockType.REPORTER,
@@ -191,7 +161,6 @@
               }
             }
           },
-          // New block: return an array of a node's children
           {
             opcode: 'getChildren',
             blockType: Scratch.BlockType.REPORTER,
@@ -252,10 +221,11 @@
               }
             }
           },
+          // New block: clear parent of node id [ID]
           {
-            opcode: 'getEffectiveX',
-            blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] effective x',
+            opcode: 'clearParent',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'clear parent of node id [ID]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -264,9 +234,9 @@
             }
           },
           {
-            opcode: 'getEffectiveY',
+            opcode: 'getRelativeX',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] effective y',
+            text: 'node id [ID] relative x',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -275,9 +245,9 @@
             }
           },
           {
-            opcode: 'getEffectiveRotation',
+            opcode: 'getRelativeY',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] effective rotation',
+            text: 'node id [ID] relative y',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -285,7 +255,18 @@
               }
             }
           },
-          // New block to clear all nodes and break all relationships
+          {
+            opcode: 'getRelativeRotation',
+            blockType: Scratch.BlockType.REPORTER,
+            text: 'node id [ID] relative rotation',
+            arguments: {
+              ID: {
+                type: Scratch.ArgumentType.STRING,
+                defaultValue: 'node1'
+              }
+            }
+          },
+          // remove every parent flag
           {
             opcode: 'clearAllNodes',
             blockType: Scratch.BlockType.COMMAND,
