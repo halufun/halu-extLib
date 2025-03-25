@@ -136,8 +136,11 @@
     }
     getInfo() {
       return {
-        id: 'transform',
+        id: 'haluTransform',
         name: 'Transform',
+        color1: '#6D8196',
+        color2: '#546373',
+        color3: '#36404A',
         blocks: [
           {
             opcode: 'assignNode',
@@ -221,7 +224,6 @@
               }
             }
           },
-          // New block: clear parent of node id [ID]
           {
             opcode: 'clearParent',
             blockType: Scratch.BlockType.COMMAND,
@@ -266,7 +268,6 @@
               }
             }
           },
-          // remove every parent flag
           {
             opcode: 'clearAllNodes',
             blockType: Scratch.BlockType.COMMAND,
