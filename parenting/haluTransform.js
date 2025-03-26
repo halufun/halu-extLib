@@ -19,8 +19,7 @@
   }
 
   class TransformExtension {
-    constructor(runtime) {
-      this.runtime = runtime;
+    constructor() {
       // A dictionary mapping node IDs to Node instances.
       this.nodes = {};
     }
@@ -38,8 +37,8 @@
 
     setPosition(args, util) {
       const id = args.ID.toString();
-      const x = Number(args.X);
-      const y = Number(args.Y);
+      const x = cast.toNumber(args.X);
+      const y = cast.toNumber(args.Y);
       if (!this.nodes[id]) {
         this.nodes[id] = new Node(util.target, id);
       }
@@ -50,7 +49,7 @@
 
     setRotation(args, util) {
       const id = args.ID.toString();
-      const rotation = Number(args.ROT);
+      const rotation = cast.toNumber(args.ROT);
       if (!this.nodes[id]) {
         this.nodes[id] = new Node(util.target, id);
       }
@@ -156,7 +155,7 @@
           {
             opcode: 'getParent',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] parent',
+            text: 'parent of node [ID]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -167,7 +166,7 @@
           {
             opcode: 'getChildren',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] children',
+            text: 'children of node [ID]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -178,7 +177,7 @@
           {
             opcode: 'setPosition',
             blockType: Scratch.BlockType.COMMAND,
-            text: 'node id [ID] set position to x: [X] y: [Y]',
+            text: 'set position of node [ID] to x: [X] y: [Y]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -197,7 +196,7 @@
           {
             opcode: 'setRotation',
             blockType: Scratch.BlockType.COMMAND,
-            text: 'node id [ID] set rotation to [ROT]',
+            text: 'set rotation of node [ID] to rotation [ROT]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -212,7 +211,7 @@
           {
             opcode: 'setParent',
             blockType: Scratch.BlockType.COMMAND,
-            text: 'node id [ID] set parent to [PARENT_ID]',
+            text: 'set parent of node [ID] to parent [PARENT_ID]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -238,7 +237,7 @@
           {
             opcode: 'getRelativeX',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] relative x',
+            text: 'relative x of node [ID]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -249,7 +248,7 @@
           {
             opcode: 'getRelativeY',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] relative y',
+            text: 'relative y of node [ID]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -260,7 +259,7 @@
           {
             opcode: 'getRelativeRotation',
             blockType: Scratch.BlockType.REPORTER,
-            text: 'node id [ID] relative rotation',
+            text: 'relative rotation of node [ID]',
             arguments: {
               ID: {
                 type: Scratch.ArgumentType.STRING,
@@ -271,7 +270,7 @@
           {
             opcode: 'clearAllNodes',
             blockType: Scratch.BlockType.COMMAND,
-            text: 'clear all nodes and break all relationships'
+            text: 'clear parent of all nodes'
           }
         ]
       };
