@@ -37,8 +37,8 @@
 
     setPosition(args, util) {
       const id = args.ID.toString();
-      const x = cast.toNumber(args.X);
-      const y = cast.toNumber(args.Y);
+      const x = Number(args.X);
+      const y = Number(args.Y);
       if (!this.nodes[id]) {
         this.nodes[id] = new Node(util.target, id);
       }
@@ -49,7 +49,7 @@
 
     setRotation(args, util) {
       const id = args.ID.toString();
-      const rotation = cast.toNumber(args.ROT);
+      const rotation = Number(args.ROT);
       if (!this.nodes[id]) {
         this.nodes[id] = new Node(util.target, id);
       }
@@ -279,3 +279,4 @@
 
   Scratch.extensions.register(new TransformExtension());
 })(Scratch);
+
